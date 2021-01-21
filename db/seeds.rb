@@ -27,6 +27,7 @@ bookings = Booking.create(
    { start_date: '02-02-2020', end_date: '03-03-2020', client_id: 3, item_id: 1 },
    { start_date: '02-02-2020', end_date: '03-03-2020', client_id: 3, item_id: 2 }])
 
-Review.create(message: 'nice item!', reviewer_id: 1, reviewable_type: 'Item', reviewable_id: 3)
-Review.create(message: 'not really nice item!', reviewer_id: 1, reviewable_type: 'Item', reviewable_id: 2)
-Review.create(message: 'good guy!', reviewer_id: 1, reviewable_type: 'User', reviewable_id: 3)
+reviews = Review.create(
+  [{message: 'nice item!', reviewer_id: 1, reviewable_type: 'Item', reviewable_id: 3},
+   { message: 'not really nice item!', reviewer_id: 1, reviewable_type: 'Item', reviewable_id: 2},
+   { message: 'good guy!', reviewer_id: 1, reviewable_type: 'User', reviewable_id: 3}])

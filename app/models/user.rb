@@ -7,6 +7,6 @@ class User < ApplicationRecord
   has_many :received_reviews, class_name: 'Review', as: :reviewable
 
   def get_booked_items
-    bookings.includes(:item)
+    bookings.select(:item)
   end
 end

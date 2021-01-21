@@ -8,7 +8,7 @@ class Review < ApplicationRecord
 
   def validate_review
     if reviewable_type == 'Item'
-      reviewer.bookings.include? reviewable_id
+      reviewer.get_booked_items.include? reviewable
     else
       true
     end
