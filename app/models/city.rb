@@ -1,7 +1,4 @@
 class City < ApplicationRecord
   has_many :users
-
-  def get_items
-    users.map { |user| user.items }
-  end
+  has_many :items, through: :users
 end

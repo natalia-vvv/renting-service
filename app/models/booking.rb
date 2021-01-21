@@ -1,5 +1,4 @@
 class Booking < ApplicationRecord
-  belongs_to  :client, class_name: 'User'
-
-  has_one :item, dependent: :nullify
+  belongs_to :client, class_name: 'User'
+  belongs_to :item
 end
