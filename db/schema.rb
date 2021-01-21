@@ -14,10 +14,10 @@ ActiveRecord::Schema.define(version: 20_210_120_090_541) do
   create_table 'bookings', force: :cascade do |t|
     t.date 'start_date'
     t.date 'end_date'
-    t.integer 'renter_id', null: false
+    t.integer 'client_id', null: false
     t.datetime 'created_at', null: false
     t.datetime 'updated_at', null: false
-    t.index ['renter_id'], name: 'index_bookings_on_renter_id'
+    t.index ['client_id'], name: 'index_bookings_on_client_id'
   end
 
   create_table 'cities', force: :cascade do |t|
