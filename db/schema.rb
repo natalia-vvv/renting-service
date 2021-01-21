@@ -10,52 +10,49 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20201129211043) do
-
-  create_table "bookings", force: :cascade do |t|
-    t.date "start_date"
-    t.date "end_date"
-    t.integer "item_id", null: false
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.index ["item_id"], name: "index_bookings_on_item_id"
+ActiveRecord::Schema.define(version: 20_210_120_090_541) do
+  create_table 'bookings', force: :cascade do |t|
+    t.date 'start_date'
+    t.date 'end_date'
+    t.integer 'renter_id', null: false
+    t.datetime 'created_at', null: false
+    t.datetime 'updated_at', null: false
+    t.index ['renter_id'], name: 'index_bookings_on_renter_id'
   end
 
-  create_table "cities", force: :cascade do |t|
-    t.string "name"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
+  create_table 'cities', force: :cascade do |t|
+    t.string 'name'
+    t.datetime 'created_at', null: false
+    t.datetime 'updated_at', null: false
   end
 
-  create_table "item_reviews", force: :cascade do |t|
-    t.string "reviewer"
-    t.text "message"
-    t.integer "item_id", null: false
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.index ["item_id"], name: "index_item_reviews_on_item_id"
+  create_table 'items', force: :cascade do |t|
+    t.string 'name'
+    t.integer 'owner_id', null: false
+    t.integer 'booking_id'
+    t.datetime 'created_at', null: false
+    t.datetime 'updated_at', null: false
+    t.index ['booking_id'], name: 'index_items_on_booking_id'
+    t.index ['owner_id'], name: 'index_items_on_owner_id'
   end
 
-  create_table "items", force: :cascade do |t|
-    t.string "name"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
+  create_table 'reviews', force: :cascade do |t|
+    t.string 'message'
+    t.integer 'reviewer_id', null: false
+    t.string 'reviewable_type'
+    t.integer 'reviewable_id'
+    t.datetime 'created_at', null: false
+    t.datetime 'updated_at', null: false
+    t.index %w[reviewable_type reviewable_id], name: 'index_reviews_on_reviewable_type_and_reviewable_id'
+    t.index ['reviewer_id'], name: 'index_reviews_on_reviewer_id'
   end
 
-  create_table "user_reviews", force: :cascade do |t|
-    t.string "reviewer"
-    t.text "message"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
+  create_table 'users', force: :cascade do |t|
+    t.string 'first_name'
+    t.string 'last_name'
+    t.integer 'city_id'
+    t.datetime 'created_at', null: false
+    t.datetime 'updated_at', null: false
+    t.index ['city_id'], name: 'index_users_on_city_id'
   end
-
-  create_table "users", force: :cascade do |t|
-    t.string "first_name"
-    t.string "last_name"
-    t.integer "item_id"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.index ["item_id"], name: "index_users_on_item_id"
-  end
-
 end

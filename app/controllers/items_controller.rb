@@ -1,5 +1,5 @@
 class ItemsController < ApplicationController
-  before_action :get_item, only: [:show, :update, :destroy]
+  before_action :get_item, only: %i[show update destroy]
 
   def index
     @items = Item.all
@@ -21,10 +21,14 @@ class ItemsController < ApplicationController
     render json: @item
   end
 
+  # def get_items_by_city(city)
+  #   render json: @items.map { |item| item.city == city}
+  # end
+
   def update
     if @item
       @item.update(item_params)
-      render json: { message: 'Item successfully updated.'}, status: 200
+      render json: { message: 'Item successfully updated.' }, status: 200
     else
       render error: { error: 'Unable to create item' }, status: 400
     end
@@ -33,20 +37,19 @@ class ItemsController < ApplicationController
   def destroy
     if @item
       @item.destroy
-      render json: { message: 'Item successfully deleted.'}, status: 200
+      render json: { message: 'Item successfully deleted.' }, status: 200
     else
       render error: { error: 'Unable to delete item' }, status: 400
     end
   end
 
   private
-    def item_params
-      params.require(:item).permit(:name)
-    end
 
-    def get_item
-      @item = Item.find(params[:id])
-    end
+  def item_params
+    params.require(:item).permit(:name)
   end
 
-
+  def get_item
+    @item = Item.find(params[:id])
+  end
+end
