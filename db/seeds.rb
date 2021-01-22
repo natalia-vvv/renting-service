@@ -29,5 +29,7 @@ bookings = Booking.create(
 
 reviews = Review.create(
   [{message: 'nice item!', reviewer_id: 1, reviewable_type: 'Item', reviewable_id: 3},
-   { message: 'not really nice item!', reviewer_id: 1, reviewable_type: 'Item', reviewable_id: 2},
-   { message: 'good guy!', reviewer_id: 1, reviewable_type: 'User', reviewable_id: 3}])
+   { message: 'not really nice item!', reviewer_id: 1, reviewable_type: 'Item', reviewable_id: 4},
+   { message: 'good guy!', reviewer_id: 1, reviewable_type: 'User', reviewable_id: 3},
+   { message: 'not good guy!', reviewer_id: 1, reviewable_type: 'User', reviewable_id: 2},
+   { message: 'not good guy!', reviewer_id: 1, reviewable_type: 'User', reviewable_id: 4}])

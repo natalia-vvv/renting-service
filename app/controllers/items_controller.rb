@@ -21,10 +21,6 @@ class ItemsController < ApplicationController
     render json: @item
   end
 
-  # def get_items_by_city(city)
-  #   render json: @items.map { |item| item.city == city}
-  # end
-
   def update
     if @item
       @item.update(item_params)
