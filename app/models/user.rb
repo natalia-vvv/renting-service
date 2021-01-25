@@ -11,7 +11,7 @@ class User < ApplicationRecord
   end
 
   def owners_of_booked_items
-    User.where(id: Item.select(:owner_id).where(id: booked_items))
+    User.joins(items: [:bookings]).where("client_id = #{self.id}").distinct
   end
 end
 
