@@ -1,15 +1,18 @@
+# frozen_string_literal: true
+
 class Review < ApplicationRecord
   belongs_to :reviewable, polymorphic: true
   belongs_to :reviewer, class_name: 'User'
 
-  validate :is_review_actual
+  validate :review_actual?
 
   private
 
-  def is_review_actual
-    if reviewable_type == 'Item'
+  def review_actual?
+    case reviewable_type
+    when 'Item'
       check_booked_item(reviewer.booked_items)
-    elsif reviewable_type == 'User'
+    when 'User'
       check_reviewed_user(reviewer.owners_of_booked_items)
     end
   end

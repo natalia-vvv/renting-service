@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 source 'https://rubygems.org'
 
 git_source(:github) do |repo_name|
@@ -37,10 +39,10 @@ group :development, :test do
   gem 'byebug', platforms: %i[mri mingw x64_mingw]
   # Adds support for Capybara system testing and selenium driver
   gem 'capybara', '>= 2.15'
-  gem 'selenium-webdriver'
-  gem 'rspec-rails', ">= 3.9.0"
   gem 'database_cleaner'
-  gem "factory_bot_rails"
+  gem 'factory_bot_rails'
+  gem 'rspec-rails', '>= 3.9.0'
+  gem 'selenium-webdriver'
 end
 
 group :development do
@@ -50,3 +52,6 @@ end
 
 # Windows does not include zoneinfo files, so bundle the tzinfo-data gem
 gem 'tzinfo-data', platforms: %i[mingw mswin x64_mingw jruby]
+
+gem 'pagy'
+gem 'rubocop-rails'

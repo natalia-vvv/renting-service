@@ -1,10 +1,11 @@
-class ItemsController < ApplicationController
-  skip_before_action :verify_authenticity_token
+# frozen_string_literal: true
 
-  before_action :get_item, only: %i[show update destroy]
+class ItemsController < ApplicationController
+  before_action :set_item, only: %i[show update destroy]
+  after_action { pagy_headers_merge(@pagy) if @pagy }
 
   def index
-    @items = Item.all
+    @pagy, @items = pagy(Item.all, items: 5)
     render json: @items, status: 200
   end
 
@@ -44,14 +45,14 @@ class ItemsController < ApplicationController
   private
 
   def item_params
-    params.require(:item).permit( :name, :owner_id)
-  rescue
+    params.require(:item).permit(:name, :owner_id)
+  rescue StandardError
     nil
   end
 
-  def get_item
+  def set_item
     @item = Item.find(params[:id])
-  rescue
+  rescue StandardError
     render json: { error: "Couldn't find such item" }, status: 404
   end
 end
