@@ -26,7 +26,8 @@ Item.create(
 )
 
 Booking.create(
-  [{ start_date: '02-02-2020', end_date: '03-03-2020', client_id: 1, item_id: 3 },
+  [{ start_date: '02-02-2020', end_date: '03-03-2020', client_id: 1,
+     item_id: 3 },
    { start_date: '02-02-2020', end_date: '03-03-2020', client_id: 1,
      item_id: 4 },
    { start_date: '02-02-2020', end_date: '03-03-2020', client_id: 1,
@@ -38,7 +39,8 @@ Booking.create(
 )
 
 Review.create(
-  [{ message: 'nice item!', reviewer_id: 1, reviewable_type: 'Item', reviewable_id: 3 },
+  [{ message: 'nice item!', reviewer_id: 1, reviewable_type: 'Item',
+     reviewable_id: 3 },
    { message: 'not really nice item!', reviewer_id: 1,
      reviewable_type: 'Item', reviewable_id: 4 },
    { message: 'good guy!', reviewer_id: 1, reviewable_type: 'User',
@@ -48,3 +50,5 @@ Review.create(
    { message: 'not good guy!', reviewer_id: 1, reviewable_type: 'User',
      reviewable_id: 4 }]
 )
+
+Category.create([{ name: 'Sport'}, {name: 'Tools'}, {name: 'Clothes'}])

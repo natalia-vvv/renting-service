@@ -2,9 +2,12 @@
 
 class Item < ApplicationRecord
   belongs_to :owner, class_name: 'User', dependent: :destroy
+  belongs_to :category, optional: true
 
   has_many :bookings, dependent: :nullify
   has_many :received_reviews, class_name: 'Review', as: :reviewable
+
+  scope :by_name, ->(name) { where("name LIKE ?", '%' + name + '%') }
 end
 
 # SELECT * FROM items Where items.id IN (SELECT bookings.item_id From bookings)

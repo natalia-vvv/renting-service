@@ -18,7 +18,7 @@ RSpec.describe 'ItemsControllers', type: :request do
       end
 
       it 'returns the right amount of items' do
-        expect(json.length).to eq(5)
+        expect(json.length).to eq(Item.count)
       end
     end
   end
@@ -35,7 +35,7 @@ RSpec.describe 'ItemsControllers', type: :request do
 
       it 'item contains expected attributes' do
         expect(json.keys).to match_array(%w[id name owner_id created_at
-                                            updated_at])
+                                            updated_at category_id])
       end
     end
 
@@ -49,9 +49,17 @@ RSpec.describe 'ItemsControllers', type: :request do
 
   describe 'POST /items' do
     context 'when item has all parameters' do
-      it 'returns http success' do
+      before do
         post '/items', params: { item: { name: 'Item', owner_id: 1 } }
+      end
+
+      it 'returns http success' do
         expect(response).to be_success
+      end
+
+      it 'increases amount of items' do
+        get '/items'
+        expect(json.length).to eq(6)
       end
     end
 
@@ -100,7 +108,7 @@ RSpec.describe 'ItemsControllers', type: :request do
         expect(response).to be_success
       end
 
-      it 'increases amount of items' do
+      it 'decreases amount of items' do
         get '/items'
         expect(json.length).to eq(4)
       end

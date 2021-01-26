@@ -5,7 +5,7 @@ class ItemsController < ApplicationController
   after_action { pagy_headers_merge(@pagy) if @pagy }
 
   def index
-    @pagy, @items = pagy(Item.all, items: 5)
+    @pagy, @items = pagy(Item.all, items: 10)
     render json: @items, status: 200
   end
 

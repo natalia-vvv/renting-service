@@ -15,11 +15,11 @@ class User < ApplicationRecord
   has_many :received_reviews, class_name: 'Review', as: :reviewable
 
   def booked_items
-    Item.joins(:bookings).where("client_id = #{id}")
+    Item.joins(:bookings).where(bookings: {client_id: id})
   end
 
   def owners_of_booked_items
-    User.joins(items: [:bookings]).where("client_id = #{id}").distinct
+    User.joins(items: [:bookings]).where(bookings: {client_id: id}).distinct
   end
 end
 
