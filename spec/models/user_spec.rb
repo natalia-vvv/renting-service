@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'rails_helper'
 
 RSpec.describe User, type: :model do
@@ -5,7 +7,9 @@ RSpec.describe User, type: :model do
   let!(:booked_item) { create(:item) }
   let!(:other_item) { create(:item) }
   let!(:booking) { create(:booking, client: user, item: booked_item) }
-  let!(:other_booking) { create(:booking, client: create(:user), item: other_item) }
+  let!(:other_booking) do
+    create(:booking, client: create(:user), item: other_item)
+  end
 
   describe 'create user' do
     context 'has valid parameters' do
@@ -38,5 +42,4 @@ RSpec.describe User, type: :model do
       expect(user.owners_of_booked_items).to match_array(booked_item.owner)
     end
   end
-
 end

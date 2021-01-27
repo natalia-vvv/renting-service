@@ -51,4 +51,4 @@ Review.create(
      reviewable_id: 4 }]
 )
 
-Category.create([{ name: 'Sport'}, {name: 'Tools'}, {name: 'Clothes'}])
+Category.create([{ name: 'Sport' }, { name: 'Tools' }, { name: 'Clothes' }])

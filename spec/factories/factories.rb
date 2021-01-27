@@ -29,6 +29,6 @@ FactoryBot.define do
   end
 
   factory :category do
-    name { "Sport" }
+    name { 'Sport' }
   end
 end

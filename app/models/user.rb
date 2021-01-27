@@ -14,9 +14,9 @@ class User < ApplicationRecord
            inverse_of: 'reviewer'
   has_many :received_reviews, class_name: 'Review', as: :reviewable
   has_many :booked_items, class_name: 'Item',
-           :source => 'item', through: :bookings
+                          source: 'item', through: :bookings
   has_many :owners_of_booked_items, class_name: 'User',
-           :source => 'owner', through: :booked_items
+                                    source: 'owner', through: :booked_items
 
   validates :first_name, :last_name, presence: true
 end
