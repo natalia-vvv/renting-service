@@ -2,9 +2,13 @@
 
 FactoryBot.define do
   factory :item do
-    name { 'Item' }
+    name { 'My item' }
     association :owner, factory: :user
     category { nil }
+
+    trait :with_category do
+      category_id { 1 }
+    end
   end
 end
 

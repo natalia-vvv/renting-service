@@ -7,13 +7,14 @@ RSpec.describe User, type: :model do
   end
 
   describe 'create user' do
-    context 'enters valid information' do
+    context 'has valid parameters' do
       it 'creates user' do
-        expect(User.first).to be_valid
+        user = build(:user)
+        expect(user).to be_valid
       end
     end
 
-    context 'enters invalid information' do
+    context 'has invalid parameters' do
       it 'does not create user without first name' do
         user = build(:user, first_name: nil)
         expect(user).not_to be_valid
