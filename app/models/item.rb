@@ -9,9 +9,9 @@ class Item < ApplicationRecord
 
   validates :name, :owner_id, presence: true
 
-  scope :find_by_name, ->(name) { where("name LIKE ?", '%' + name + '%') }
-  scope :find_by_category, ->(category) {
-    joins(:category).where(categories: { name: category })
+  scope :by_name, ->(name) { where("name LIKE ?", '%' + name + '%') }
+  scope :by_category, ->(category_id) {
+    joins(:category).where(categories: { id: category_id })
   }
 end
 

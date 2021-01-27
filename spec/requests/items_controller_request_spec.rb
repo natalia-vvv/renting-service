@@ -18,7 +18,7 @@ RSpec.describe 'ItemsControllers', type: :request do
       end
 
       it 'returns the right amount of items' do
-        expect(json.length).to eq(Item.count)
+        expect(json.length).to eq(5)
       end
     end
   end
@@ -42,6 +42,7 @@ RSpec.describe 'ItemsControllers', type: :request do
     context 'when requests non-exist data' do
       it 'returns http not found' do
         get '/items/6'
+        Item.all
         expect(response).to have_http_status(:not_found)
       end
     end

@@ -1,10 +1,11 @@
 require 'rails_helper'
 
 RSpec.describe Item, type: :model do
+  let!(:item) { create(:item) }
+
   describe 'create item' do
     context 'has valid parameters' do
       it 'creates item' do
-        item = create(:item)
         expect(item).to be_valid
       end
     end
@@ -23,25 +24,27 @@ RSpec.describe Item, type: :model do
   end
 
   describe 'search by attributes' do
-    before(:context) do
-      create_list(:item, 5)
-    end
+    let!(:category) { create(:category) }
+    let!(:other_category) { create(:category, :name => 'Category 2') }
+    let!(:item_with_category) { create(:item, :category => category) }
+    let!(:other_item) { create(:item, :name => 'Other item') }
+    let!(:items_with_searched_name) { [item, item_with_category] }
+    let!(:items_with_part_name) { [item, item_with_category, other_item] }
 
     context 'finds by name' do
       it 'returns items found by name' do
-        expect(Item.find_by_name('My item')).to match_array(Item.where(name: 'My item'))
+        p Item.all
+        expect(Item.by_name('My item')).to match_array(items_with_searched_name)
       end
 
       it 'returns items found by part of name' do
-        expect(Item.find_by_name('item')).to match_array(Item.where('name LIKE ?', '%item%'))
+        expect(Item.by_name('item')).to match_array(items_with_part_name)
       end
     end
 
-    context 'finds by category name' do
-      it 'returns items found by category name' do
-        create(:category)
-        create_list(:item, 3, :with_category)
-        expect(Item.find_by_category('Sport')).to match_array(Category.find_by_name('Sport').items)
+    context 'finds by category' do
+      it 'returns items found by category' do
+        expect(Item.by_category(category)).to match_array(item_with_category)
       end
     end
   end
