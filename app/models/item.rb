@@ -6,6 +6,7 @@ class Item < ApplicationRecord
 
   has_many :bookings, dependent: :nullify
   has_many :received_reviews, class_name: 'Review', as: :reviewable
+  has_and_belongs_to_many :filters
 
   validates :name, :owner_id, presence: true
 

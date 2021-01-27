@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20210126092839) do
+ActiveRecord::Schema.define(version: 20210127160600) do
 
   create_table "bookings", force: :cascade do |t|
     t.date "start_date"
@@ -35,6 +35,14 @@ ActiveRecord::Schema.define(version: 20210126092839) do
     t.datetime "updated_at", null: false
   end
 
+  create_table "filters", force: :cascade do |t|
+    t.string "name"
+    t.integer "category_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["category_id"], name: "index_filters_on_category_id"
+  end
+
   create_table "items", force: :cascade do |t|
     t.string "name"
     t.integer "owner_id", null: false
@@ -43,6 +51,14 @@ ActiveRecord::Schema.define(version: 20210126092839) do
     t.datetime "updated_at", null: false
     t.index ["category_id"], name: "index_items_on_category_id"
     t.index ["owner_id"], name: "index_items_on_owner_id"
+  end
+
+  create_table "options", force: :cascade do |t|
+    t.string "value"
+    t.integer "filter_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["filter_id"], name: "index_options_on_filter_id"
   end
 
   create_table "reviews", force: :cascade do |t|
