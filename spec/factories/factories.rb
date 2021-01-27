@@ -20,7 +20,7 @@ FactoryBot.define do
   factory :booking do
     start_date { '02-02-2020' }
     end_date { '03-03-2020' }
-    client_id { 1 }
+    association :client, factory: :user
     item
   end
 

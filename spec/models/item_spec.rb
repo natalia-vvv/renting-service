@@ -25,9 +25,9 @@ RSpec.describe Item, type: :model do
 
   describe 'search by attributes' do
     let!(:category) { create(:category) }
-    let!(:other_category) { create(:category, :name => 'Category 2') }
-    let!(:item_with_category) { create(:item, :category => category) }
-    let!(:other_item) { create(:item, :name => 'Other item') }
+    let!(:other_category) { create(:category, name: 'Category 2') }
+    let!(:item_with_category) { create(:item, category: category) }
+    let!(:other_item) { create(:item, name: 'Other item') }
     let!(:items_with_searched_name) { [item, item_with_category] }
     let!(:items_with_part_name) { [item, item_with_category, other_item] }
 

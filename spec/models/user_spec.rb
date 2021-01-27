@@ -1,15 +1,15 @@
 require 'rails_helper'
 
 RSpec.describe User, type: :model do
-  before do
-    create(:user)
-    create_list(:booking, 3)
-  end
+  let!(:user) { create(:user) }
+  let!(:booked_item) { create(:item) }
+  let!(:other_item) { create(:item) }
+  let!(:booking) { create(:booking, client: user, item: booked_item) }
+  let!(:other_booking) { create(:booking, client: create(:user), item: other_item) }
 
   describe 'create user' do
     context 'has valid parameters' do
       it 'creates user' do
-        user = build(:user)
         expect(user).to be_valid
       end
     end
@@ -29,14 +29,13 @@ RSpec.describe User, type: :model do
 
   describe 'when all booked items requested' do
     it 'returns booked items' do
-      create(:booking, client_id: 2)
-      expect(User.first.booked_items).to match_array(Item.first(3))
+      expect(user.booked_items).to match_array(booked_item)
     end
   end
 
   describe 'when owners of booked items requested' do
     it 'returns items\' owners' do
-      expect(User.first.owners_of_booked_items).to match_array(User.offset(1))
+      expect(user.owners_of_booked_items).to match_array(booked_item.owner)
     end
   end
 
