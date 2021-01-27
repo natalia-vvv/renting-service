@@ -6,9 +6,23 @@ RSpec.describe User, type: :model do
     create_list(:booking, 3)
   end
 
-  describe 'create valid user' do
-    it 'creates user' do
-      expect(User.first).to be_valid
+  describe 'create user' do
+    context 'enters valid information' do
+      it 'creates user' do
+        expect(User.first).to be_valid
+      end
+    end
+
+    context 'enters invalid information' do
+      it 'does not create user without first name' do
+        user = build(:user, first_name: nil)
+        expect(user).not_to be_valid
+      end
+
+      it 'does not create user without last name' do
+        user = build(:user, last_name: nil)
+        expect(user).not_to be_valid
+      end
     end
   end
 
