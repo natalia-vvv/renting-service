@@ -51,4 +51,34 @@ Review.create(
      reviewable_id: 4 }]
 )
 
-Category.create([{ name: 'Sport' }, { name: 'Tools' }, { name: 'Clothes' }])
+Category.create([{ name: 'Clothes' }, { name: 'Boots' }, { name: 'Tools' }])
+
+Filter.create(
+  [{ name: 'Color', category_id: 1 },
+   { name: 'Type', category_id: 1 },
+   { name: 'Size', category_id: 2 },
+   { name: 'Brand', category_id: 2 }])
+
+Option.create(
+  [{ value: 'Red', filter_id: 1 },
+   { value: 'Green', filter_id: 1 },
+   { value: 'Blue', filter_id: 1 },
+   { value: 'Coat', filter_id: 2 },
+   { value: 'Jacket', filter_id: 2 },
+   { value: 'Small', filter_id: 3 },
+   { value: 'Medium', filter_id: 3 },
+   { value: 'Big', filter_id: 3 }]
+)
+
+ItemOption.create(
+  [{ item_id: 1, option_id: 1 },
+   { item_id: 1, option_id: 2 },
+   { item_id: 2, option_id: 1 },
+   { item_id: 3, option_id: 3 },
+   { item_id: 4, option_id: 3 },
+   { item_id: 4, option_id: 1 }]
+)
+# Option.all.each_with_index do |option, i|
+#   i = Item.create({ name: "Optioned item #{i+1}", owner_id: rand(1..4) })
+#   i.options << option
+# end

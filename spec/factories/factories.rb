@@ -31,4 +31,18 @@ FactoryBot.define do
   factory :category do
     name { 'Sport' }
   end
+
+  factory :item_option do
+    item
+    option
+  end
+
+  factory :filter do
+    name { 'Color' }
+  end
+
+  factory :option do
+    value { 'Red' }
+    filter
+  end
 end

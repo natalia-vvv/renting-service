@@ -4,6 +4,7 @@ require 'rails_helper'
 
 RSpec.describe Item, type: :model do
   let!(:item) { create(:item) }
+  let!(:other_item) { create(:item, name: 'Other item') }
 
   describe 'create item' do
     context 'has valid parameters' do
@@ -29,13 +30,11 @@ RSpec.describe Item, type: :model do
     let!(:category) { create(:category) }
     let!(:other_category) { create(:category, name: 'Category 2') }
     let!(:item_with_category) { create(:item, category: category) }
-    let!(:other_item) { create(:item, name: 'Other item') }
     let!(:items_with_searched_name) { [item, item_with_category] }
     let!(:items_with_part_name) { [item, item_with_category, other_item] }
 
     context 'finds by name' do
       it 'returns items found by name' do
-        p Item.all
         expect(Item.by_name('My item')).to match_array(items_with_searched_name)
       end
 
@@ -49,5 +48,22 @@ RSpec.describe Item, type: :model do
         expect(Item.by_category(category)).to match_array(item_with_category)
       end
     end
+
+    context 'search by options' do
+      let!(:color_option) { create(:option) }
+      let!(:size_option) { create(:option, value: 'Small') }
+      let!(:option1_for_item1) { create(:item_option, item: item, option: color_option) }
+      let!(:option2_for_item1) { create(:item_option, item: item, option: size_option) }
+      let!(:option_for_item2) { create(:item_option, item: other_item, option: color_option) }
+
+      it 'finds items by one option' do
+        expect(Item.by_option(color_option.id)).to match_array([item, other_item])
+      end
+
+      it 'finds items by two options' do
+        expect(Item.by_option(color_option.id, size_option.id)).to match_array([item])
+      end
+    end
   end
+
 end
