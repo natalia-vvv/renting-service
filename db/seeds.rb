@@ -79,7 +79,3 @@ ItemOption.create(
    { item_id: 4, option_id: 3 },
    { item_id: 4, option_id: 1 }]
 )
-# Option.all.each_with_index do |option, i|
-#   i = Item.create({ name: "Optioned item #{i+1}", owner_id: rand(1..4) })
-#   i.options << option
-# end

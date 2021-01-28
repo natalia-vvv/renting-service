@@ -31,14 +31,14 @@ RSpec.describe User, type: :model do
     end
   end
 
-  describe 'when all booked items requested' do
+  describe '.booked_items' do
     it 'returns booked items' do
       expect(user.booked_items).to match_array(booked_item)
     end
   end
 
-  describe 'when owners of booked items requested' do
-    it 'returns items\' owners' do
+  describe '.owners_of_booked_items' do
+    it "returns items' owners" do
       expect(user.owners_of_booked_items).to match_array(booked_item.owner)
     end
   end

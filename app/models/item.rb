@@ -12,17 +12,18 @@ class Item < ApplicationRecord
   validates :name, :owner_id, presence: true
 
   scope :by_name, ->(name) { where('name LIKE ?', "%#{name}%") }
-  scope :by_category, lambda { |category_id|
+  scope :by_category, ->(category_id) do
     joins(:category).where(categories: { id: category_id })
-  }
-  scope :by_option, lambda { |*option_ids|
+  end
+
+  scope :by_option, lambda { |option_ids|
     joins(:item_options)
-      .where(item_options: { option_id: [option_ids] })
+      .where(item_options: { option_id: option_ids })
       .group(:item_id)
       .having('COUNT(DISTINCT option_id) == ?', option_ids.count)
   }
 end
 
-#  Item.joins(:item_options).where(item_options: {option_id: [1, 2]}).group(:item_id).having('COUNT(DISTINCT option_id) == 2')
+# Item.joins(:item_options).where(item_options: {option_id: [1, 2]}).group(:item_id).having('COUNT(DISTINCT option_id) == 2')
 # SELECT * FROM items Where items.id IN (SELECT bookings.item_id From bookings)
 # Item.where(id: Booking.select(:item_id).where(client_id: 1))
