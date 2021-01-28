@@ -13,17 +13,23 @@ class Item < ApplicationRecord
 
   scope :by_name, ->(name) { where('name LIKE ?', "%#{name}%") }
   scope :by_category, ->(category_id) do
-    joins(:category).where(categories: { id: category_id })
+    where(category_id: category_id )
   end
 
-  scope :by_option, lambda { |option_ids|
+  scope :by_option, ->(option_ids) do
     joins(:item_options)
       .where(item_options: { option_id: option_ids })
       .group(:item_id)
       .having('COUNT(DISTINCT option_id) == ?', option_ids.count)
-  }
+  end
+
+  scope :by_price_range, ->(min_price, max_price, days) do
+
+  end
 end
 
 # Item.joins(:item_options).where(item_options: {option_id: [1, 2]}).group(:item_id).having('COUNT(DISTINCT option_id) == 2')
 # SELECT * FROM items Where items.id IN (SELECT bookings.item_id From bookings)
 # Item.where(id: Booking.select(:item_id).where(client_id: 1))
+
+# SELECT * FROM items WHERE (daily_price * days) BETWEEN (min_price, max_price)

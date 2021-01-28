@@ -16,13 +16,13 @@ User.create(
 )
 
 Item.create(
-  [{ name: 'Luke item 1', owner_id: 1, category_id: 1 },
-   { name: 'Luke item 2', owner_id: 1, category_id: 1 },
-   { name: 'Harry item 1', owner_id: 2, category_id: 1 },
-   { name: 'Harry item 2', owner_id: 2 },
-   { name: 'My item 1', owner_id: 3 },
-   { name: 'My item 2', owner_id: 3, category_id: 3 },
-   { name: 'Someones item 1', owner_id: 4, category_id: 3 }]
+  [{ name: 'Luke item 1', owner_id: 1, category_id: 1, daily_price: 10 },
+   { name: 'Luke item 2', owner_id: 1, category_id: 1, daily_price: 20 },
+   { name: 'Harry item 1', owner_id: 2, category_id: 1, daily_price: 5 },
+   { name: 'Harry item 2', owner_id: 2, daily_price: 35 },
+   { name: 'My item 1', owner_id: 3, daily_price: 60 },
+   { name: 'My item 2', owner_id: 3, category_id: 3, daily_price: 50 },
+   { name: 'Someones item 1', owner_id: 4, category_id: 3, daily_price: 42 }]
 )
 
 Booking.create(
