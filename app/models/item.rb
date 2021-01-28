@@ -17,7 +17,7 @@ class Item < ApplicationRecord
   }
   scope :by_option, lambda { |*option_ids|
     joins(:item_options)
-      .where(item_options: {option_id: [option_ids]})
+      .where(item_options: { option_id: [option_ids] })
       .group(:item_id)
       .having('COUNT(DISTINCT option_id) == ?', option_ids.count)
   }

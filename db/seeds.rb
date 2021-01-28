@@ -57,7 +57,8 @@ Filter.create(
   [{ name: 'Color', category_id: 1 },
    { name: 'Type', category_id: 1 },
    { name: 'Size', category_id: 2 },
-   { name: 'Brand', category_id: 2 }])
+   { name: 'Brand', category_id: 2 }]
+)
 
 Option.create(
   [{ value: 'Red', filter_id: 1 },

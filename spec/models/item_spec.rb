@@ -52,18 +52,25 @@ RSpec.describe Item, type: :model do
     context 'search by options' do
       let!(:color_option) { create(:option) }
       let!(:size_option) { create(:option, value: 'Small') }
-      let!(:option1_for_item1) { create(:item_option, item: item, option: color_option) }
-      let!(:option2_for_item1) { create(:item_option, item: item, option: size_option) }
-      let!(:option_for_item2) { create(:item_option, item: other_item, option: color_option) }
+      let!(:option1_for_item1) do
+        create(:item_option, item: item, option: color_option)
+      end
+      let!(:option2_for_item1) do
+        create(:item_option, item: item, option: size_option)
+      end
+      let!(:option_for_item2) do
+        create(:item_option, item: other_item, option: color_option)
+      end
 
       it 'finds items by one option' do
-        expect(Item.by_option(color_option.id)).to match_array([item, other_item])
+        expect(Item.by_option(color_option.id)).to match_array([item,
+                                                                other_item])
       end
 
       it 'finds items by two options' do
-        expect(Item.by_option(color_option.id, size_option.id)).to match_array([item])
+        expect(Item.by_option(color_option.id,
+                              size_option.id)).to match_array([item])
       end
     end
   end
-
 end
