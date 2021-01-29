@@ -5,6 +5,7 @@ FactoryBot.define do
     name { 'My item' }
     association :owner, factory: :user
     category { nil }
+    daily_price { 20 }
 
     trait :with_category do
       category

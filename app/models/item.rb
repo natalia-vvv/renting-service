@@ -23,13 +23,26 @@ class Item < ApplicationRecord
       .having('COUNT(DISTINCT option_id) == ?', option_ids.count)
   end
 
-  scope :by_price_range, ->(min_price, max_price, days) do
+  scope :by_price_range, ->(price_range, days) do
+    where((Item.arel_table[:daily_price] * days).between(price_range))
+  end
 
+  scope :by_non_booked_date, ->(from_date, until_date) do
+    bookings = Booking.arel_table
+
+    inner = joins(:bookings)
+      .where.not(bookings[:start_date].between(from_date..until_date))
+      .where.not(bookings[:end_date].between(from_date..until_date))
+
+    outer = left_outer_joins(:bookings).where(bookings[:item_id].eq(nil))
+    inner + outer
   end
 end
 
-# Item.joins(:item_options).where(item_options: {option_id: [1, 2]}).group(:item_id).having('COUNT(DISTINCT option_id) == 2')
 # SELECT * FROM items Where items.id IN (SELECT bookings.item_id From bookings)
 # Item.where(id: Booking.select(:item_id).where(client_id: 1))
 
-# SELECT * FROM items WHERE (daily_price * days) BETWEEN (min_price, max_price)
+# SELECT * FROM items
+# WHERE (daily_price * days) BETWEEN (min_price, max_price)
+#
+# WHERE start_date AND end_date BETWEEN (from, until)
