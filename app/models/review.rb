@@ -18,14 +18,10 @@ class Review < ApplicationRecord
   end
 
   def check_booked_item(items)
-    unless items.include?(reviewable)
-      errors.add(:reviewable, "user hasn't booked such item")
-    end
+    errors.add(:reviewable, "user hasn't booked such item") unless items.include?(reviewable)
   end
 
   def check_reviewed_user(owners)
-    unless owners.include?(reviewable)
-      errors.add(:reviewable, "user hasn't dealt with such user")
-    end
+    errors.add(:reviewable, "user hasn't dealt with such user") unless owners.include?(reviewable)
   end
 end
