@@ -97,9 +97,14 @@ RSpec.describe Item, type: :model do
           create(:booking, start_date: from_date, end_date: from_date + 10.days, item: item)
         end
       end
+      let!(:lately_booked_item) do
+        create(:item) do |item|
+          create(:booking, start_date: from_date + 11.days, end_date: from_date + 20.days, item: item)
+        end
+      end
 
       it 'returns only free items' do
-        expect(Item.by_non_booked_date(from_date, from_date + 10.days)).to match_array([free_item])
+        expect(Item.by_non_booked_date(from_date, from_date + 10.days)).to match_array([free_item, lately_booked_item])
       end
     end
 

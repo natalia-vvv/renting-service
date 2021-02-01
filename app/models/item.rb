@@ -35,7 +35,8 @@ class Item < ApplicationRecord
             .where.not(bookings[:end_date].between(from_date..until_date))
 
     outer = left_outer_joins(:bookings).where(bookings[:item_id].eq(nil))
-    inner + outer
+    ids = inner.pluck(:id) + outer.pluck(:id)
+    Item.where(id: ids.uniq)
   }
 end
 

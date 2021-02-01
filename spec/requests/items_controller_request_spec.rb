@@ -148,6 +148,7 @@ RSpec.describe 'ItemsControllers', type: :request do
 
   describe '.by_category' do
     let!(:sport) { create(:category) }
+    let!(:sport_item) { create(:item, category: sport) }
     before do
       get '/items', params: { category: sport.id }
     end
@@ -262,9 +263,10 @@ RSpec.describe 'ItemsControllers', type: :request do
         end_date: from_date + 10.days
       }
       get '/items', params: params
-      items = Item.by_option([red.id])
+      items = Item.by_non_booked_date(from_date, from_date + 10.days)
+                  .by_option([red.id])
                   .by_price_range(0..5, 5)
-                  .by_non_booked_date(from_date, from_date + 10.days)
+
       expect(json).to match_array(items.as_json)
     end
   end

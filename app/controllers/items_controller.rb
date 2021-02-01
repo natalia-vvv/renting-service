@@ -3,7 +3,7 @@
 class ItemsController < ApplicationController
   before_action :set_item, only: %i[show update destroy]
   before_action :apply_filters, only: :index
-  after_action { pagy_headers_merge(@pagy) if @pagy }
+  #  after_action { pagy_headers_merge(@pagy) if @pagy }
 
   def index
     @pagy, @items = pagy(@items, items: 10)
@@ -60,19 +60,20 @@ class ItemsController < ApplicationController
     options = params.permit(options: [])
     price_range = params.permit(:min_price, :max_price, :days)
     non_booked = params.permit(:start_date, :end_date)
-    @items = []
-    @items = array_intersection(@items, Item.by_name(name)) if name
-    @items = array_intersection(@items, Item.by_category(Integer(category))) if category
-    @items = array_intersection(@items, Item.by_option(options[:options])) unless options.empty?
+    @items = Item.all
+    @items = items_merge(@items, Item.by_name(name)) if name
+    @items = items_merge(@items, Item.by_category(Integer(category))) if category
+    @items = items_merge(@items, Item.by_option(options[:options])) unless options.empty?
     unless price_range.empty?
-      @items = array_intersection(@items, Item.by_price_range(Integer(price_range[:min_price])..Integer(price_range[:max_price]),
-                                     Integer(price_range[:days])))
+      @items = items_merge(@items, Item.by_price_range(Integer(price_range[:min_price])..Integer(price_range[:max_price]),
+                                                       Integer(price_range[:days])))
     end
-    @items = array_intersection(@items, Item.by_non_booked_date(non_booked[:start_date], non_booked[:end_date])) unless non_booked.empty?
-    @items = Item.all if @items == []
+    unless non_booked.empty?
+      @items = items_merge(@items, Item.by_non_booked_date(non_booked[:start_date], non_booked[:end_date]))
+    end
   end
 
-  def array_intersection(arr, arr2)
-   arr == [] ? arr2 : arr & arr2
+  def items_merge(items, filtered_items)
+    items == Item.all ? filtered_items : items & filtered_items
   end
 end
