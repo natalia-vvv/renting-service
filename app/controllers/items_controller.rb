@@ -2,10 +2,11 @@
 
 class ItemsController < ApplicationController
   before_action :set_item, only: %i[show update destroy]
+  before_action :apply_filters, only: :index
   after_action { pagy_headers_merge(@pagy) if @pagy }
 
   def index
-    @pagy, @items = pagy(Item.all, items: 10)
+    @pagy, @items = pagy(@items, items: 10)
     render json: @items, status: 200
   end
 
@@ -45,14 +46,33 @@ class ItemsController < ApplicationController
   private
 
   def item_params
-    params.require(:item).permit(:name, :owner_id)
-  rescue StandardError
-    nil
+    params.require(:item).permit(:name, :owner_id, :daily_price,
+                                 :category_id, item_options: [:option_id])
   end
 
   def set_item
     @item = Item.find(params[:id])
-  rescue StandardError
-    render json: { error: "Couldn't find such item" }, status: 404
+  end
+
+  def apply_filters
+    name = params[:name]
+    category = params[:category]
+    options = params.permit(options: [])
+    price_range = params.permit(:min_price, :max_price, :days)
+    non_booked = params.permit(:start_date, :end_date)
+    @items = []
+    @items = array_intersection(@items, Item.by_name(name)) if name
+    @items = array_intersection(@items, Item.by_category(Integer(category))) if category
+    @items = array_intersection(@items, Item.by_option(options[:options])) unless options.empty?
+    unless price_range.empty?
+      @items = array_intersection(@items, Item.by_price_range(Integer(price_range[:min_price])..Integer(price_range[:max_price]),
+                                     Integer(price_range[:days])))
+    end
+    @items = array_intersection(@items, Item.by_non_booked_date(non_booked[:start_date], non_booked[:end_date])) unless non_booked.empty?
+    @items = Item.all if @items == []
+  end
+
+  def array_intersection(arr, arr2)
+   arr == [] ? arr2 : arr & arr2
   end
 end
