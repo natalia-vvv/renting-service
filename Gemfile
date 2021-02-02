@@ -55,4 +55,5 @@ gem 'tzinfo-data', platforms: %i[mingw mswin x64_mingw jruby]
 
 gem 'pagy'
 
+gem "rodauth-rails", "~> 0.6"
 # gem 'rubocop-rails'
