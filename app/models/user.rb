@@ -2,6 +2,7 @@
 
 class User < ApplicationRecord
   belongs_to :city
+  belongs_to :account
 
   has_many :items,
            class_name: 'Item',

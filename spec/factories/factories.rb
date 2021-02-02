@@ -16,6 +16,7 @@ FactoryBot.define do
     first_name { 'John' }
     last_name { 'Doe' }
     city
+    account
   end
 
   factory :booking do
@@ -45,5 +46,12 @@ FactoryBot.define do
   factory :option do
     value { 'Red' }
     filter
+  end
+
+  factory :account do
+    sequence :email do |n|
+      "person#{n}@example.com"
+    end
+    status { 'verified' }
   end
 end

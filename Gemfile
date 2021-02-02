@@ -57,3 +57,5 @@ gem 'pagy'
 
 gem "rodauth-rails", "~> 0.6"
 # gem 'rubocop-rails'
+
+gem "jwt", "~> 2.2"

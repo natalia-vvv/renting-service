@@ -3,7 +3,8 @@
 class ItemsController < ApplicationController
   before_action :set_item, only: %i[show update destroy]
   before_action :apply_filters, only: :index
-  #  after_action { pagy_headers_merge(@pagy) if @pagy }
+  before_action :authenticate
+  after_action { pagy_headers_merge(@pagy) if @pagy }
 
   def index
     @pagy, @items = pagy(@items, items: 10)
@@ -54,23 +55,32 @@ class ItemsController < ApplicationController
     @item = Item.find(params[:id])
   end
 
+  def set_parameters
+    @name = params[:name]
+    @category = params[:category]
+    @options = params.permit(options: [])
+    @price_range = int_values(params.permit(:min_price, :max_price, :days))
+    @non_booked = params.permit(:start_date, :end_date)
+  end
+
   def apply_filters
-    name = params[:name]
-    category = params[:category]
-    options = params.permit(options: [])
-    price_range = params.permit(:min_price, :max_price, :days)
-    non_booked = params.permit(:start_date, :end_date)
+    set_parameters
     @items = Item.all
-    @items = items_merge(@items, Item.by_name(name)) if name
-    @items = items_merge(@items, Item.by_category(Integer(category))) if category
-    @items = items_merge(@items, Item.by_option(options[:options])) unless options.empty?
-    unless price_range.empty?
-      @items = items_merge(@items, Item.by_price_range(Integer(price_range[:min_price])..Integer(price_range[:max_price]),
-                                                       Integer(price_range[:days])))
+    @items = items_merge(@items, Item.by_name(@name)) if @name
+    @items = items_merge(@items, Item.by_category(Integer(@category))) if @category
+    @items = items_merge(@items, Item.by_option(@options[:options])) unless @options.empty?
+    unless @price_range.empty?
+      range = @price_range[:min_price]..@price_range[:max_price]
+      @items = items_merge(@items, Item.by_price_range(range,
+                                                       @price_range[:days]))
     end
-    unless non_booked.empty?
-      @items = items_merge(@items, Item.by_non_booked_date(non_booked[:start_date], non_booked[:end_date]))
+    unless @non_booked.empty?
+      @items = items_merge(@items, Item.by_non_booked_date(@non_booked[:start_date], @non_booked[:end_date]))
     end
+  end
+
+  def int_values(hash)
+    hash.each { |key, value| hash[key] = Integer(value) }
   end
 
   def items_merge(items, filtered_items)

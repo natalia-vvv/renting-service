@@ -9,7 +9,7 @@ RSpec.describe 'ItemsControllers', type: :request do
 
   describe 'GET /items' do
     before do
-      get '/items'
+      get '/items', as: :json, headers: { Authorization: "Bearer" }
     end
 
     context 'when request successful' do
@@ -75,7 +75,14 @@ RSpec.describe 'ItemsControllers', type: :request do
       let!(:red) { create(:option) }
 
       it 'creates item with options' do
-        post '/items', params: { item: { name: 'Item', owner_id: 1, item_options: [red.id, small.id] } }
+        params = {
+          item: {
+            name: 'Item',
+            owner_id: 1,
+            item_options: [red.id, small.id]
+          }
+        }
+        post '/items', params: params
         expect(response).to have_http_status(:success)
       end
     end
