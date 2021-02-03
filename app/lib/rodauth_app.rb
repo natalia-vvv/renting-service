@@ -1,11 +1,7 @@
 class RodauthApp < Rodauth::Rails::App
   configure(json: :only) do
     # List of authentication features that are loaded.
-    enable :create_account, :verify_account, :verify_account_grace_period,
-           :login, :logout, :remember,
-           :reset_password, :change_password, :change_password_notify,
-           :change_login, :verify_login_change,
-           :close_account
+    enable :login, :create_account, :change_password, :close_account, :jwt
 
     # See the Rodauth documentation for the list of available config options:
     # http://rodauth.jeremyevans.net/documentation.html
@@ -13,7 +9,7 @@ class RodauthApp < Rodauth::Rails::App
     # ==> General
     # The secret key used for hashing public-facing tokens for various features.
     # Defaults to Rails `secret_key_base`, but you can use your own secret key.
-    enable :jwt
+
     jwt_secret "06c442e84ee27e16ed7c7405787d001f714292d81010da2c939f9c8c23fa7b90a37a8d64fb59232cf72c2bd1bf499a4429e2375faca6513443c1d96aff7c1e35"
     # Specify the controller used for view rendering and CSRF verification.
     rails_controller { RodauthController }
@@ -26,9 +22,10 @@ class RodauthApp < Rodauth::Rails::App
 
     # Store password hash in a column instead of a separate table.
     # account_password_hash_column :password_digest
-
+    require_login_confirmation? false
+    require_password_confirmation? false
     # Set password when creating account instead of when verifying.
-    verify_account_set_password? false
+    # verify_account_set_password? false
 
     # Redirect back to originally requested location after authentication.
     # login_return_to_requested_location? true
@@ -96,27 +93,27 @@ class RodauthApp < Rodauth::Rails::App
 
     # ==> Remember Feature
     # Remember all logged in users.
-    after_login { remember_login }
+    # after_login { remember_login }
 
     # Or only remember users that have ticked a "Remember Me" checkbox on login.
     # after_login { remember_login if param_or_nil("remember") }
 
     # Extend user's remember period when remembered via a cookie
-    extend_remember_deadline? true
+    # extend_remember_deadline? true
 
     # ==> Hooks
     # Validate custom fields in the create account form.
-    before_create_account do
-      if param("first_name").empty? || param("last_name").empty?
-        throw_error_status(422, "Name", "must be present")
-      end
-    end
+    # before_create_account do
+    #   if param("first_name").empty? || param("last_name").empty?
+    #     throw_error_status(422, "Name", "must be present")
+    #   end
+    # end
 
     # Perform additional actions after the account is created.
-    after_create_account do
-      User.create!(account_id: account[:id], first_name: param("first_name"),
-                   last_name: param("last_name"))
-    end
+    # after_create_account do
+    #   User.create!(account_id: account[:id], first_name: param("first_name"),
+    #                last_name: param("last_name"))
+    # end
 
     # Do additional cleanup after the account is closed.
     after_close_account do
@@ -125,13 +122,13 @@ class RodauthApp < Rodauth::Rails::App
 
     # ==> Redirects
     # Redirect to home page after logout.
-    logout_redirect "/"
+    # logout_redirect "/"
 
     # Redirect to wherever login redirects to after account verification.
-    verify_account_redirect { login_redirect }
+    # verify_account_redirect { login_redirect }
 
     # Redirect to login page after password reset.
-    reset_password_redirect { login_path }
+    # reset_password_redirect { login_path }
 
     # ==> Deadlines
     # Change default deadlines for some actions.
@@ -150,7 +147,7 @@ class RodauthApp < Rodauth::Rails::App
   # end
 
   route do |r|
-    rodauth.load_memory # autologin remembered users
+    # rodauth.load_memory # autologin remembered users
 
     r.rodauth # route rodauth requests
 

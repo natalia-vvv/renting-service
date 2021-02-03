@@ -2,14 +2,15 @@
 
 require 'rails_helper'
 
-RSpec.describe 'ItemsControllers', type: :request do
+RSpec.describe ItemsController, type: :request do
   before do
     create_list(:item, 5)
   end
 
   describe 'GET /items' do
     before do
-      get '/items', as: :json, headers: { Authorization: "Bearer" }
+
+      get '/items', as: :json, headers: { Authorization: 'Bearer' }
     end
 
     context 'when request successful' do
@@ -139,9 +140,41 @@ RSpec.describe 'ItemsControllers', type: :request do
     end
   end
 
+  describe '.my_items' do
+    before do
+      r = Rodauth::Rails.rodauth
+      token = JWT.encode({ account_id: nazar.id }, r.jwt_secret, r.jwt_algorithm)
+      get '/my_items', params: {}, as: :json, headers: { Authorization: "Bearer #{token}" }
+    end
+
+    let!(:nazar) { create(:account, user: create(:user, first_name: 'Nazar')) }
+    let!(:nazar_item) { create(:item, name: "Nazar's item", owner: nazar.user) }
+    let!(:other_item) { create(:item) }
+    
+    it 'returns http success' do
+      p nazar_item
+      expect(response).to have_http_status(:success)
+    end
+
+    it "returns current user's items" do
+      p response.body
+      expect(json).to match_array([nazar_item])
+    end
+  end
+
   describe '.by_name' do
     before do
-      get '/items', params: { name: 'item' }
+      account = create(:account, user: create(:user, first_name: 'Nazar'))
+
+      # post "/create-account", params: { login: "foo@example.com", password: "secret", confirm_password: "secret" }, as: :json
+      # p token = response.headers["Authorization"]
+
+      r = Rodauth::Rails.rodauth
+
+      # p jwt_payload = JWT.decode(token, r.jwt_secret, true, r.send(:_jwt_decode_opts).merge(:algorithm=>r.jwt_algorithm))[0]
+      token = JWT.encode({ account_id: account.id }, r.jwt_secret, r.jwt_algorithm)
+
+      get '/items', params: { name: 'item' }, as: :json, headers: { Authorization: "Bearer #{token}" }
     end
 
     it 'has success http response' do

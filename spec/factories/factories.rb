@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require 'bcrypt'
+
 FactoryBot.define do
   factory :item do
     name { 'My item' }
@@ -53,5 +55,19 @@ FactoryBot.define do
       "person#{n}@example.com"
     end
     status { 'verified' }
+
+    transient do
+      password { 'password' }
+    end
+
+    after(:create) do |account, evaluator|
+      password = BCrypt::Password.create(
+        evaluator.password, cost: BCrypt::Engine::MIN_COST
+      )
+
+      DB[:account_password_hashes].insert(
+        id: account.id, password_hash: password.to_s
+      )
+    end
   end
 end
