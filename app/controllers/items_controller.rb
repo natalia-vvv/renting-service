@@ -7,15 +7,12 @@ class ItemsController < ApplicationController
   after_action { pagy_headers_merge(@pagy) if @pagy }
 
   def index
-
     @pagy, @items = pagy(@items, items: 10)
     render json: @items, status: 200
   end
 
   def my_items
-    p current_user
-
-    Item.where(owner_id: current_user.id)
+    render json: Item.where(owner_id: current_user.id), status: 200
   end
 
   def create

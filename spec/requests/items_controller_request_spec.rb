@@ -141,24 +141,22 @@ RSpec.describe ItemsController, type: :request do
   end
 
   describe '.my_items' do
+    let!(:nazar) { create(:user, first_name: 'Nazar', account: create(:account)) }
+    let!(:nazar_item) { create(:item, name: "Nazar's item", owner: nazar) }
+
     before do
       r = Rodauth::Rails.rodauth
       token = JWT.encode({ account_id: nazar.id }, r.jwt_secret, r.jwt_algorithm)
       get '/my_items', params: {}, as: :json, headers: { Authorization: "Bearer #{token}" }
     end
 
-    let!(:nazar) { create(:account, user: create(:user, first_name: 'Nazar')) }
-    let!(:nazar_item) { create(:item, name: "Nazar's item", owner: nazar.user) }
-    let!(:other_item) { create(:item) }
-    
+
     it 'returns http success' do
-      p nazar_item
       expect(response).to have_http_status(:success)
     end
 
     it "returns current user's items" do
-      p response.body
-      expect(json).to match_array([nazar_item])
+      expect(json).to match_array([nazar_item].as_json)
     end
   end
 
