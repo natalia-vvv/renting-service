@@ -88,11 +88,24 @@ RSpec.describe Item, type: :model do
   end
 
   describe '.by_non_booked_date' do
-    let!(:from_date) { Time.new(2020, 1, 1) }
-    let!(:free_item) { create(:item) }
+    subject(:query) { described_class.by_non_booked_date(Date.yesterday, Date.tomorrow) }
+
+    let!(:from_date) { Date.new(2020, 1, 1) }
+    let!(:free_item) { create(:item, name: 'Free item') }
+
+    let!(:booked_item_feb) do
+      create(:item, name: 'Item feb') do |i|
+        create(:booking, item: i, start_date: Date.new(2020, 1, 1), end_date: Date.new(2020, 1, 3))
+        create(:booking, item: i, start_date: Date.today, end_date: Date.today)
+      end
+    end
+
+    it 'should returns free items' do
+      expect(query.pluck(:id)).to contain_exactly(free_item.id)
+    end
 
     context 'item is booked on full date range' do
-      let!(:booked_item) do
+      let!(:booked_item_jan) do
         create(:item) do |item|
           create(:booking, start_date: from_date, end_date: from_date + 10.days, item: item)
         end
@@ -110,12 +123,13 @@ RSpec.describe Item, type: :model do
 
     context 'item is booked on one day from range' do
       let!(:other_booked_item) do
-        create(:item) do |item|
+        create(:item, name: 'Booked item') do |item|
           create(:booking, start_date: from_date - 1.day, end_date: from_date + 1.day, item: item)
         end
       end
 
       it 'returns only free items' do
+        p Item.all
         expect(Item.by_non_booked_date(from_date, from_date + 10.days)).to match_array([free_item])
       end
     end

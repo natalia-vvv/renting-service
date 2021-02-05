@@ -3,16 +3,24 @@
 class ItemsController < ApplicationController
   before_action :set_item, only: %i[show update destroy]
   before_action :apply_filters, only: :index
-  # before_action :authenticate
+  before_action :authenticate
   after_action { pagy_headers_merge(@pagy) if @pagy }
 
   def index
     @pagy, @items = pagy(@items, items: 10)
-    render json: @items, status: 200
+    render json: @items
   end
 
   def my_items
-    render json: Item.where(owner_id: current_user.id), status: 200
+    @user_id = current_user.id
+    apply_filters
+    render json: @items
+  end
+
+  def users_items
+    @user_id = params[:user_id]
+    apply_filters
+    render json: @items
   end
 
   def create
@@ -59,35 +67,13 @@ class ItemsController < ApplicationController
     @item = Item.find(params[:id])
   end
 
-  def set_parameters
-    @name = params[:name]
-    @category = params[:category]
-    @options = params.permit(options: [])
-    @price_range = int_values(params.permit(:min_price, :max_price, :days))
-    @non_booked = params.permit(:start_date, :end_date)
-  end
-
   def apply_filters
-    set_parameters
-    @items = Item.all
-    @items = items_merge(@items, Item.by_name(@name)) if @name
-    @items = items_merge(@items, Item.by_category(Integer(@category))) if @category
-    @items = items_merge(@items, Item.by_option(@options[:options])) unless @options.empty?
-    unless @price_range.empty?
-      range = @price_range[:min_price]..@price_range[:max_price]
-      @items = items_merge(@items, Item.by_price_range(range,
-                                                       @price_range[:days]))
-    end
-    unless @non_booked.empty?
-      @items = items_merge(@items, Item.by_non_booked_date(@non_booked[:start_date], @non_booked[:end_date]))
-    end
+    @items = @user_id ? all_users_items : Item.all
+    item_filter = ItemFilter.new
+    @items = item_filter.call(params, @items)
   end
 
-  def int_values(hash)
-    hash.each { |key, value| hash[key] = Integer(value) }
-  end
-
-  def items_merge(items, filtered_items)
-    items == Item.all ? filtered_items : items & filtered_items
+  def all_users_items
+    Item.where(owner_id: @user_id)
   end
 end

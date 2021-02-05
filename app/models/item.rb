@@ -19,7 +19,7 @@ class Item < ApplicationRecord
   scope :by_option, lambda { |option_ids|
     joins(:item_options)
       .where(item_options: { option_id: option_ids })
-      .group(:item_id)
+      .group(:id)
       .having('COUNT(DISTINCT option_id) == ?', option_ids.count)
   }
 
@@ -27,18 +27,26 @@ class Item < ApplicationRecord
     where((Item.arel_table[:daily_price] * days).between(price_range))
   }
 
-  scope :by_non_booked_date, lambda { |from_date, until_date|
+  scope :by_non_booked_date, lambda { |start_date, end_date|
     bookings = Booking.arel_table
+    # inner = joins(:bookings)
+    #         .where.not(bookings[:start_date].between(date_range))
+    #         .where.not(bookings[:end_date].between(date_range))
 
-    inner = joins(:bookings)
-            .where.not(bookings[:start_date].between(from_date..until_date))
-            .where.not(bookings[:end_date].between(from_date..until_date))
+    # outer = left_joins(:bookings).where(bookings[:item_id].eq(nil))
+    # ids = inner.pluck(:id) + outer.pluck(:id)
+    # where(id: ids.uniq)
 
-    outer = left_outer_joins(:bookings).where(bookings[:item_id].eq(nil))
-    ids = inner.pluck(:id) + outer.pluck(:id)
-    Item.where(id: ids.uniq)
+    rel = joins("LEFT JOIN bookings ON bookings.item_id = items.id AND bookings.start_date BETWEEN '#{start_date}' AND '#{end_date}'
+          AND bookings.end_date BETWEEN '#{start_date}' AND '#{end_date}'")
+          .where(bookings[:item_id].eq(nil))
+    puts rel.to_sql
+    rel
   }
 end
+
+# ) OR (bookings.item_id = items.id AND  '#{start_date}' BETWEEN bookings.start_date AND
+#           bookings.end_date AND '#{end_date}' BETWEEN bookings.start_date AND bookings.end_date)
 
 # SELECT * FROM items Where items.id IN (SELECT bookings.item_id From bookings)
 # Item.where(id: Booking.select(:item_id).where(client_id: 1))

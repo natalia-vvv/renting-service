@@ -123,6 +123,7 @@ RSpec.describe ItemsController, type: :request do
       end
 
       it 'returns http success' do
+        p response, response.body
         expect(response).to have_http_status(:success)
       end
 
@@ -141,22 +142,142 @@ RSpec.describe ItemsController, type: :request do
   end
 
   describe '.my_items' do
-    let!(:nazar) { create(:user, first_name: 'Nazar', account: create(:account)) }
+    let!(:nazar) { create(:user, first_name: 'Nazar') }
     let!(:nazar_item) { create(:item, name: "Nazar's item", owner: nazar) }
-
-    before do
-      r = Rodauth::Rails.rodauth
-      token = JWT.encode({ account_id: nazar.id }, r.jwt_secret, r.jwt_algorithm)
-      get '/my_items', params: {}, as: :json, headers: { Authorization: "Bearer #{token}" }
+    let!(:sport) { create(:category) }
+    let!(:nazar_sport_item) do
+      create(:item, category: sport, name: "Nazar's sport item", owner: nazar)
+    end
+    let!(:rodauth) { Rodauth::Rails.rodauth }
+    let!(:token) do
+      JWT.encode({ account_id: nazar.account_id }, rodauth.jwt_secret, rodauth.jwt_algorithm)
     end
 
+    context 'no filters' do
+      before do
+        get '/my_items', params: {}, as: :json, headers: { Authorization: "Bearer #{token}" }
+      end
 
-    it 'returns http success' do
-      expect(response).to have_http_status(:success)
+      it 'returns http success' do
+        expect(response).to have_http_status(:success)
+      end
+
+      it "returns current user's items" do
+        expect(json).to match_array([nazar_item, nazar_sport_item].as_json)
+      end
     end
 
-    it "returns current user's items" do
-      expect(json).to match_array([nazar_item].as_json)
+    context 'with filters' do
+      let!(:red) { create(:option) }
+      let!(:red_item_option) do
+        create(:item_option, item: red_sport_cheap_item, option: red)
+      end
+      let!(:red_sport_cheap_item) do
+        create(:item, category: sport, daily_price: 1, owner: nazar)
+      end
+
+      let!(:from_date) { Time.new(2020, 1, 1) }
+      let!(:booking) do
+        create(:booking, start_date: from_date, end_date: from_date + 10.days)
+      end
+
+      it 'filters items by name and category' do
+        get '/my_items', params: { name: 'sport', category: sport.id }, as: :json,
+                         headers: { Authorization: "Bearer #{token}" }
+        expect(json).to match_array([nazar_sport_item].as_json)
+      end
+
+      it 'filters items by category, options, price range, dates range' do
+        params = {
+          options: [red.id],
+          category: sport.id,
+          min_price: 0,
+          max_price: 5,
+          days: 5,
+          start_date: from_date,
+          end_date: from_date + 10.days
+        }
+        get '/my_items', params: params, as: :json,
+                         headers: { Authorization: "Bearer #{token}" }
+        expect(json).to match_array([red_sport_cheap_item].as_json)
+      end
+
+    end
+  end
+
+  describe '.users_items' do
+    let!(:nazar) { create(:user, first_name: 'Nazar') }
+    let!(:nazar_item) { create(:item, name: "Nazar's item", owner: nazar) }
+    let!(:rodauth) { Rodauth::Rails.rodauth }
+    let!(:token) do
+      JWT.encode({ account_id: nazar.account_id }, rodauth.jwt_secret, rodauth.jwt_algorithm)
+    end
+    let!(:stranger) { create(:user, first_name: 'Stranger') }
+    let!(:stranger_item) do
+      create(:item, name: "Stranger's item", owner: stranger)
+    end
+    
+    context 'without filters' do
+      before do
+        get '/users_items', params: { user_id: stranger.id }, as: :json,
+                            headers: { Authorization: "Bearer #{token}" }
+      end
+      
+      it 'returns http success' do
+        expect(response).to have_http_status(:success)
+      end
+
+      it "returns other user's items" do
+        expect(json).to match_array([stranger_item].as_json)
+      end
+
+      it "returns current user's items if user_id is current_user.id" do
+        get '/users_items', params: { user_id: nazar.id }, as: :json,
+                            headers: { Authorization: "Bearer #{token}" }
+        expect(json).to match_array([nazar_item].as_json)
+      end
+    end
+    
+    context 'with filters' do
+      let!(:red) { create(:option) }
+      let!(:sport) { create(:category) }
+      let!(:red_item_option) do
+        create(:item_option, item: red_sport_cheap_item, option: red)
+      end
+      let!(:red_sport_cheap_item) do
+        create(:item, category: sport, daily_price: 1, owner: stranger)
+      end
+      let!(:stranger_sport_item) do
+        create(:item, category: sport, name: "Stranger's sport item", owner: stranger)
+      end
+
+      let!(:from_date) { Time.new(2020, 1, 1) }
+      let!(:booking) do
+        create(:booking, start_date: from_date, end_date: from_date + 10.days)
+      end
+
+      it 'filters items by name and category' do
+        get '/users_items', params: { name: 'sport', category: sport.id }, as: :json,
+                            headers: { Authorization: "Bearer #{token}" }
+
+        expect(json).to match_array([stranger_sport_item].as_json)
+      end
+
+      it 'filters items by name and category' do
+        params = {
+          options: [red.id],
+          category: sport.id,
+          min_price: 0,
+          max_price: 5,
+          days: 5,
+          start_date: from_date,
+          end_date: from_date + 10.days
+        }
+        get '/users_items', params: params, as: :json,
+                            headers: { Authorization: "Bearer #{token}" }
+        expect(json).to match_array([red_sport_cheap_item].as_json)
+      end
+
     end
   end
 
@@ -228,12 +349,15 @@ RSpec.describe ItemsController, type: :request do
 
   describe '.by_price_range' do
     before do
+      user = create(:user, first_name: 'natalia', account: create(:account))
+      r = Rodauth::Rails.rodauth
+      token = JWT.encode({ account_id: user.account.id }, r.jwt_secret, r.jwt_algorithm)
       params = {
         min_price: 0,
         max_price: 65,
         days: 3
       }
-      get '/items', params: params
+      get '/items', params: params, headers: { Authorization: "Bearer #{token}" }
     end
 
     it 'has success http response' do
@@ -300,7 +424,10 @@ RSpec.describe ItemsController, type: :request do
         start_date: from_date,
         end_date: from_date + 10.days
       }
-      get '/items', params: params
+      user = create(:user, first_name: 'natalia')
+      r = Rodauth::Rails.rodauth
+      token = JWT.encode({ account_id: user.account_id }, r.jwt_secret, r.jwt_algorithm)
+      get '/items', params: params, headers: { Authorization: "Bearer #{token}" }
       items = Item.by_non_booked_date(from_date, from_date + 10.days)
                   .by_option([red.id])
                   .by_price_range(0..5, 5)
